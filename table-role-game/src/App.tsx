@@ -1,14 +1,19 @@
 import { GameProvider, useGame } from './context/GameContext'
-import { SetupView } from './views/SetupView'
-import { GameView } from './views/GameView'
+import { AppShell } from './components/AppShell'
+import { SetupMode } from './views/SetupMode'
+import { GameMode } from './views/GameMode'
 import './App.css'
 
 function AppContent() {
   const { mode } = useGame()
-  return mode === 'setup' ? <SetupView /> : <GameView />
+  return (
+    <AppShell>
+      {mode === 'setup' ? <SetupMode /> : <GameMode />}
+    </AppShell>
+  )
 }
 
-function App() {
+export default function App() {
   return (
     <GameProvider>
       <div className="master-app">
@@ -17,5 +22,3 @@ function App() {
     </GameProvider>
   )
 }
-
-export default App

@@ -1,120 +1,438 @@
+/* Figma node 19:4504 — MasterApp */
+
 .master-app {
   min-height: 100vh;
+  background: #fff;
 }
 
-.setup-view {
+.app-shell {
   min-height: 100vh;
 }
 
-.setup-view .ant-layout-sider {
-  background: #fffef8 !important;
-  border-right: 1px solid #e8e4dc;
+/* Sidebar — #F8F8F8, ~30-35% width */
+.master-sidebar {
+  background: #f8f8f8 !important;
+  border-right: 1px solid #f0f0f0;
 }
 
-.setup-view .ant-layout-content {
-  background: #f5f0e6;
+.sidebar-inner {
+  padding: 16px;
 }
 
-.setup-main {
+.sidebar-section {
+  margin-bottom: 24px;
+}
+
+.section-title {
+  margin: 0 0 12px 0 !important;
+  font-weight: 600;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.section-header .section-title {
+  margin: 0 !important;
+}
+
+.section-header a {
+  color: #1890ff;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.field-label {
+  font-size: 12px;
+  color: #8c8c8c;
+  margin-bottom: 4px;
+}
+
+/* Result area — dashed border */
+.result-area {
+  border: 1px dashed #d9d9d9;
+  border-radius: 6px;
+  padding: 16px;
+  text-align: center;
+  min-height: 60px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
 }
 
-.map-container {
+.result-label {
+  font-size: 12px;
+  color: #8c8c8c;
+}
+
+.result-value {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.result-icon {
+  font-size: 24px;
+  color: #bfbfbf;
+}
+
+.players-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.players-list li {
+  padding: 4px 0;
+  font-size: 14px;
+}
+
+/* Figma 19-6887 — Список проверок */
+.checks-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.check-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  font-size: 14px;
+}
+
+.check-delete-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #8c8c8c;
+  padding: 4px;
+}
+
+.check-delete-btn:hover {
+  color: #ff4d4f;
+}
+
+.add-check-label {
+  font-size: 14px;
+  color: #262626;
+  margin-bottom: 4px;
+}
+
+/* Main content — white */
+.app-main {
+  background: #fff;
+  padding: 24px;
+  min-height: 100vh;
+}
+
+.main-content,
+.game-content {
   width: 100%;
-  max-width: 800px;
-  aspect-ratio: 4/3;
-  border-radius: 20px;
-  overflow: hidden;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
-  border: 2px solid #e8e4dc;
+  min-height: calc(100vh - 48px);
 }
 
-.map-container.game-mode {
-  max-width: 100%;
-  aspect-ratio: auto;
-  min-height: 500px;
-}
-
-.map-view {
-  width: 100%;
-  height: 100%;
-  min-height: 400px;
+.game-content-with-overlay {
   position: relative;
+}
+
+/* Figma 19-9348 — Оверлей проверки навыка */
+.skill-check-overlay {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.75);
+  color: #fff;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.skill-check-overlay-close {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.85);
+  cursor: pointer;
+  padding: 0 4px;
+  display: flex;
+  align-items: center;
+}
+
+.skill-check-overlay-close:hover {
+  color: #fff;
+}
+
+/* Load map area — centered button, light grey */
+.load-map-area {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+}
+
+.load-map-btn {
+  background: #f0f0f0 !important;
+  border-color: #d9d9d9 !important;
+  color: #262626 !important;
+}
+
+.load-map-btn:hover {
+  background: #e8e8e8 !important;
+  border-color: #bfbfbf !important;
+}
+
+.map-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  color: #8c8c8c;
+}
+
+/* Map canvas */
+.select-cell-hint {
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  background: #e6f7ff;
+  border: 1px solid #91d5ff;
+  border-radius: 8px;
+  color: #0050b3;
+  font-size: 14px;
+}
+
+.map-canvas {
+  width: 100%;
+  max-width: 900px;
+  aspect-ratio: 4/3;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #e8e8e8;
   cursor: pointer;
 }
 
 .map-cell {
   position: relative;
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.04);
   min-height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.2s;
 }
 
 .map-cell:hover {
-  background: rgba(32, 178, 170, 0.1);
+  background: rgba(24, 144, 255, 0.06);
 }
 
-.fog-cell {
+.fog {
   position: absolute;
   inset: 0;
-  background: rgba(30, 30, 30, 0.85);
+  background: rgba(0, 0, 0, 0.88);
   pointer-events: none;
 }
 
-.map-cell.revealed .fog-cell {
+.map-cell.revealed .fog {
   display: none;
 }
 
-.skill-marker {
+.marker {
   position: absolute;
-  background: #20b2aa;
-  color: white;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #1890ff;
+  border: 2px solid #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Figma 19-9645 — Нумерованные маркеры проверок */
+.marker-number {
   width: 24px;
   height: 24px;
-  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
-  font-weight: bold;
-  box-shadow: 0 2px 8px rgba(32, 178, 170, 0.4);
-  z-index: 2;
 }
 
-.skill-result {
+.result-badge {
   position: absolute;
-  font-size: 12px;
-  font-weight: 700;
-  padding: 4px 8px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.result-badge.passed {
+  background: #52c41a;
+  color: #fff;
+}
+
+.result-badge.failed {
+  background: #ff4d4f;
+  color: #fff;
+}
+
+.game-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.game-header span {
+  color: #8c8c8c;
+  font-size: 14px;
+}
+
+.upload-modal {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.upload-zone {
+  border: 2px dashed #d9d9d9;
   border-radius: 8px;
-  z-index: 3;
-}
-
-.skill-result.passed {
-  background: rgba(82, 196, 26, 0.9);
-  color: white;
-}
-
-.skill-result.failed {
-  background: rgba(240, 147, 176, 0.9);
-  color: white;
-}
-
-.empty-state {
-  max-width: 400px;
+  padding: 40px;
   text-align: center;
-  margin-top: 48px;
+  cursor: pointer;
+  transition: border-color 0.2s;
 }
 
-.map-uploader-card .ant-card-body {
-  padding: 16px;
+.upload-zone:hover {
+  border-color: #1890ff;
 }
 
-.game-view .ant-layout-header {
-  line-height: 64px;
+.upload-zone .anticon {
+  font-size: 48px;
+  color: #bfbfbf;
+}
+
+.upload-zone:hover .anticon {
+  color: #1890ff;
+}
+
+.upload-zone p {
+  margin: 8px 0 0;
+  color: #8c8c8c;
+}
+
+.grid-settings label {
+  display: block;
+  margin-bottom: 8px;
+}
+
+/* Player cards — Figma node 17:320 */
+.player-card {
+  background: #fff;
+  border: 1px solid #f0f0f0;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 8px;
+}
+
+.player-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.player-card-header .ant-typography {
+  margin: 0;
+  font-weight: 500;
+}
+
+.player-delete-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #8c8c8c;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.player-delete-btn:hover {
+  color: #ff4d4f;
+}
+
+.player-card-stats {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.player-hp {
+  display: inline-flex;
+  align-items: center;
+}
+
+.hp-input.ant-input-number {
+  width: 48px;
+  padding: 0 4px;
+}
+
+.hp-input.ant-input-number .ant-input-number-input {
+  font-size: 14px;
+}
+
+.init-field {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.init-field:focus-within {
+  border-color: #4096ff;
+  box-shadow: 0 0 0 2px rgba(5, 145, 255, 0.1);
+}
+
+.init-prefix {
+  padding: 0 8px;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.88);
+  background: #fafafa;
+  border-right: 1px solid #d9d9d9;
+}
+
+.init-input.ant-input-number {
+  width: 40px;
+  border: none !important;
+}
+
+.init-input.ant-input-number .ant-input-number-input {
+  text-align: center;
+}
+
+.init-roll-input.ant-input-number {
+  width: 36px;
+}
+
+/* Add Player Modal — Figma node 17:436 */
+.add-player-label {
+  font-size: 14px;
+  margin-bottom: 6px;
+  color: #262626;
+}
+
+.grid-inputs {
+  display: flex;
+  gap: 12px;
 }

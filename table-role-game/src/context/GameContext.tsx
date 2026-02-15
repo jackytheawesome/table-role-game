@@ -8,13 +8,29 @@ interface GameState {
   players: Player[]
   skillChecks: SkillCheckPoint[]
   revealedCells: Set<string>
+  uploadModalOpen: boolean
+  addPlayerModalOpen: boolean
+  selectingCellForCheck: boolean
 }
 
 interface GameContextType extends GameState {
   setMode: (mode: AppMode) => void
+  setUploadModalOpen: (open: boolean) => void
+  setAddPlayerModalOpen: (open: boolean) => void
+  setSelectingCellForCheck: (selecting: boolean) => void
   setMap: (image: string, cols: number, rows: number) => void
-  addPlayer: (name: string) => void
+  addPlayer: (data: {
+    name: string
+    healthPoints?: number
+    initiative?: number
+  }) => void
   removePlayer: (id: string) => void
+  updatePlayer: (
+    id: string,
+    data: Partial<Pick<Player, 'healthPoints' | 'initiative' | 'initiativeRoll'>>
+  ) => void
+  rollInitiativeForAll: () => void
+  clearInitiativeRolls: () => void
   addSkillCheck: (point: Omit<SkillCheckPoint, 'id'>) => void
   removeSkillCheck: (id: string) => void
   updateSkillCheckResult: (id: string, result: 'passed' | 'failed') => void
@@ -29,6 +45,9 @@ const defaultState: GameState = {
   players: [],
   skillChecks: [],
   revealedCells: new Set(),
+  uploadModalOpen: false,
+  addPlayerModalOpen: false,
+  selectingCellForCheck: false,
 }
 
 const GameContext = createContext<GameContextType | null>(null)
@@ -40,6 +59,18 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     setState((s) => ({ ...s, mode }))
   }, [])
 
+  const setUploadModalOpen = useCallback((open: boolean) => {
+    setState((s) => ({ ...s, uploadModalOpen: open }))
+  }, [])
+
+  const setAddPlayerModalOpen = useCallback((open: boolean) => {
+    setState((s) => ({ ...s, addPlayerModalOpen: open }))
+  }, [])
+
+  const setSelectingCellForCheck = useCallback((selecting: boolean) => {
+    setState((s) => ({ ...s, selectingCellForCheck: selecting }))
+  }, [])
+
   const setMap = useCallback((image: string, cols: number, rows: number) => {
     setState((s) => ({
       ...s,
@@ -49,17 +80,54 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     }))
   }, [])
 
-  const addPlayer = useCallback((name: string) => {
-    const player: Player = {
-      id: crypto.randomUUID(),
-      name,
-      color: `hsl(${Math.random() * 360}, 60%, 55%)`,
-    }
-    setState((s) => ({ ...s, players: [...s.players, player] }))
-  }, [])
+  const addPlayer = useCallback(
+    (data: { name: string; healthPoints?: number; initiative?: number }) => {
+      const player: Player = {
+        id: crypto.randomUUID(),
+        name: data.name,
+        healthPoints: data.healthPoints,
+        initiative: data.initiative,
+        color: `hsl(${Math.random() * 360}, 60%, 55%)`,
+      }
+      setState((s) => ({ ...s, players: [...s.players, player] }))
+    },
+    []
+  )
 
   const removePlayer = useCallback((id: string) => {
     setState((s) => ({ ...s, players: s.players.filter((p) => p.id !== id) }))
+  }, [])
+
+  const updatePlayer = useCallback(
+    (
+      id: string,
+      data: Partial<Pick<Player, 'healthPoints' | 'initiative' | 'initiativeRoll'>>
+    ) => {
+      setState((s) => ({
+        ...s,
+        players: s.players.map((p) =>
+          p.id === id ? { ...p, ...data } : p
+        ),
+      }))
+    },
+    []
+  )
+
+  const rollInitiativeForAll = useCallback(() => {
+    setState((s) => ({
+      ...s,
+      players: s.players.map((p) => {
+        const roll = Math.floor(Math.random() * 20) + 1
+        return { ...p, initiativeRoll: roll }
+      }),
+    }))
+  }, [])
+
+  const clearInitiativeRolls = useCallback(() => {
+    setState((s) => ({
+      ...s,
+      players: s.players.map((p) => ({ ...p, initiativeRoll: undefined })),
+    }))
   }, [])
 
   const addSkillCheck = useCallback((point: Omit<SkillCheckPoint, 'id'>) => {
@@ -104,12 +172,18 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
   const value: GameContextType = {
     ...state,
     setMode,
+    setUploadModalOpen,
+    setAddPlayerModalOpen,
+    setSelectingCellForCheck,
     setMap,
     addPlayer,
     removePlayer,
+    updatePlayer,
     addSkillCheck,
     removeSkillCheck,
     updateSkillCheckResult,
+    rollInitiativeForAll,
+    clearInitiativeRolls,
     revealCell,
     resetGame,
   }

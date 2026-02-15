@@ -1,7 +1,13 @@
 import { useState } from 'react'
-import { Input, InputNumber, Modal, Select, Space } from 'antd'
+import { InputNumber, Modal, Select, Space } from 'antd'
 
 const SKILL_OPTIONS = [
+  'Сила',
+  'Ловкость',
+  'Телосложение',
+  'Интеллект',
+  'Мудрость',
+  'Харизма',
   'Атлетика',
   'Акробатика',
   'Ловкость рук',
@@ -24,7 +30,8 @@ const SKILL_OPTIONS = [
 
 interface SkillCheckModalProps {
   open: boolean
-  cellPos: { col: number; row: number } | null
+  checkNumber: number
+  cellPos?: { col: number; row: number } | null
   onSave: (data: {
     skill: string
     difficulty: number
@@ -33,48 +40,47 @@ interface SkillCheckModalProps {
   onCancel: () => void
 }
 
+/**
+ * Figma 19-6282, 19-6577 — Добавление проверки: Что проверяем, Класс сложности
+ */
 export function SkillCheckModal({
   open,
-  cellPos,
+  checkNumber,
   onSave,
   onCancel,
 }: SkillCheckModalProps) {
   const [skill, setSkill] = useState<string>('')
-  const [difficulty, setDifficulty] = useState(10)
-  const [description, setDescription] = useState('')
+  const [difficulty, setDifficulty] = useState(1)
 
   const handleSave = () => {
     if (skill) {
-      onSave({ skill, difficulty, description: description || undefined })
+      onSave({ skill, difficulty, description: undefined })
       setSkill('')
-      setDifficulty(10)
-      setDescription('')
+      setDifficulty(1)
     }
+  }
+
+  const handleCancel = () => {
+    onCancel()
+    setSkill('')
+    setDifficulty(1)
   }
 
   return (
     <Modal
-      title={
-        cellPos
-          ? `Точка проверки навыка (${cellPos.col + 1}, ${cellPos.row + 1})`
-          : 'Точка проверки навыка'
-      }
+      title={`Добавление проверки "${checkNumber}"`}
       open={open}
       onOk={handleSave}
-      onCancel={() => {
-        onCancel()
-        setSkill('')
-        setDifficulty(10)
-        setDescription('')
-      }}
+      onCancel={handleCancel}
       okText="Добавить"
-      cancelText="Отмена"
+      cancelButtonProps={{ style: { display: 'none' } }}
+      okButtonProps={{ disabled: !skill }}
     >
       <Space direction="vertical" style={{ width: '100%' }} size="middle">
         <div>
-          <label>Навык</label>
+          <div className="add-check-label">Что проверяем</div>
           <Select
-            placeholder="Выберите навык"
+            placeholder="Название навыка"
             value={skill || undefined}
             onChange={setSkill}
             options={SKILL_OPTIONS.map((s) => ({ label: s, value: s }))}
@@ -82,23 +88,13 @@ export function SkillCheckModal({
           />
         </div>
         <div>
-          <label>Сложность (DC)</label>
+          <div className="add-check-label">Класс сложности</div>
           <InputNumber
-            min={5}
+            min={1}
             max={30}
             value={difficulty}
-            onChange={(v) => setDifficulty(v ?? 10)}
+            onChange={(v) => setDifficulty(v ?? 1)}
             style={{ width: '100%', marginTop: 8 }}
-          />
-        </div>
-        <div>
-          <label>Описание (опционально)</label>
-          <Input.TextArea
-            placeholder="Что происходит при успехе/провале?"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            rows={3}
-            style={{ marginTop: 8 }}
           />
         </div>
       </Space>
