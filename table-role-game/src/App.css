@@ -430,12 +430,18 @@
 
 .init-display {
   font-size: 14px;
-  color: rgba(0, 0, 0, 0.88);
+  color: #8c8c8c;
 }
 
 .init-roll-display {
   font-size: 14px;
   font-weight: 500;
+  margin-left: auto;
+}
+
+.init-roll-display .init-roll-modifier {
+  color: #8c8c8c;
+  font-weight: 400;
 }
 
 .init-field {

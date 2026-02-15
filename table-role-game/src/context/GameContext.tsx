@@ -47,6 +47,7 @@ function loadPersistedState(): Partial<GameState> | null {
     if (!raw) return null
     const data = JSON.parse(raw)
     return {
+      mode: data.mode === 'game' ? 'game' : 'setup',
       mapImage: data.mapImage ?? null,
       mapSize: data.mapSize ?? { cols: 10, rows: 8 },
       players: data.players ?? [],
@@ -61,6 +62,7 @@ function loadPersistedState(): Partial<GameState> | null {
 function saveState(state: GameState) {
   try {
     const toSave = {
+      mode: state.mode,
       mapImage: state.mapImage,
       mapSize: state.mapSize,
       players: state.players,

@@ -78,7 +78,7 @@ function PlayerCard({
         </span>
         {isGameMode && initRoll != null && (
           <span className="init-roll-display">
-            {initRoll}{init >= 0 ? '+' : ''}{init}
+            {initRoll}<span className="init-roll-modifier">{init >= 0 ? '+' : ''}{init}</span>
           </span>
         )}
       </div>
@@ -118,25 +118,37 @@ export function Sidebar() {
   const [diceCount, setDiceCount] = useState(1)
   const [diceType, setDiceType] = useState('d20')
   const [modifier, setModifier] = useState(0)
-  const [rollResult, setRollResult] = useState<{ sum: number; total: number } | null>(null)
+  const [rollResult, setRollResult] = useState<{ rolls: number[]; modifier: number } | null>(null)
+
+  const effectiveDiceCount = diceType === 'd100' ? 1 : diceCount
+  const diceCountMax = diceType === 'd100' ? 1 : 20
 
   const rollDice = () => {
     const match = diceType.match(/d(\d+)/)
     const sides = match ? parseInt(match[1], 10) : 6
-    let sum = 0
-    for (let i = 0; i < diceCount; i++) {
-      sum += Math.floor(Math.random() * sides) + 1
+    const count = diceType === 'd100' ? 1 : diceCount
+    const rolls: number[] = []
+    for (let i = 0; i < count; i++) {
+      rolls.push(Math.floor(Math.random() * sides) + 1)
     }
-    setRollResult({ sum, total: sum + modifier })
+    setRollResult({ rolls, modifier })
+  }
+
+  const formatDieValue = (value: number) => {
+    if (diceType === 'd20') {
+      if (value === 1) return '💢 1'
+      if (value === 20) return '✨ 20'
+    }
+    return String(value)
   }
 
   const formatRollResult = () => {
     if (!rollResult) return null
-    const { sum, total } = rollResult
-    const isD20 = diceType === 'd20' && diceCount === 1
-    if (isD20 && sum === 1) return <>💢 1</>
-    if (isD20 && sum === 20) return <>✨{sum}+{modifier}={total}</>
-    return <>{sum}+{modifier}={total}</>
+    const { rolls, modifier } = rollResult
+    const parts = rolls.map(formatDieValue)
+    const total = rolls.reduce((a, b) => a + b, 0) + modifier
+    const modifierStr = modifier > 0 ? ` + ${modifier}` : modifier < 0 ? ` - ${Math.abs(modifier)}` : ''
+    return <>{parts.join(' + ')}{modifierStr} = {total}</>
   }
 
   return (
@@ -173,9 +185,11 @@ export function Sidebar() {
               <div className="field-label">Сколько</div>
               <InputNumber
                 min={1}
-                max={20}
-                value={diceCount}
-                onChange={(v) => setDiceCount(v ?? 1)}
+                max={diceCountMax}
+                value={effectiveDiceCount}
+                onChange={(v) => {
+                  if (diceType !== 'd100') setDiceCount(v ?? 1)
+                }}
                 style={{ width: 64 }}
               />
             </div>
@@ -183,7 +197,10 @@ export function Sidebar() {
               <div className="field-label">Какой</div>
               <Select
                 value={diceType}
-                onChange={setDiceType}
+                onChange={(v) => {
+                  setDiceType(v)
+                  if (v === 'd100') setDiceCount(1)
+                }}
                 options={DICE_OPTIONS.map((d) => ({ value: d, label: d }))}
                 style={{ width: 80 }}
               />
