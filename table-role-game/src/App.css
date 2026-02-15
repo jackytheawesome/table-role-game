@@ -72,15 +72,26 @@
 .result-value {
   font-size: 20px;
   font-weight: 600;
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .result-icon {
   font-size: 24px;
   color: #bfbfbf;
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .dice-roll-animation {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
   animation: diceRollSpin 600ms ease-in-out;
 }
 
