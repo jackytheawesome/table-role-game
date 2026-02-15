@@ -78,7 +78,7 @@ function PlayerCard({
         </span>
         {isGameMode && initRoll != null && (
           <span className="init-roll-display">
-            {(initRoll ?? 0) + init}
+            {initRoll}{init >= 0 ? '+' : ''}{init}
           </span>
         )}
       </div>

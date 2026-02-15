@@ -261,8 +261,8 @@
   position: absolute;
   inset: 0;
   background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(36px);
+  -webkit-backdrop-filter: blur(36px);
   pointer-events: none;
 }
 
