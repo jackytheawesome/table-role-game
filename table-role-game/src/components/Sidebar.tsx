@@ -13,7 +13,7 @@ import {
   DeleteOutlined,
   HeartFilled,
 } from '@ant-design/icons'
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useGame } from '../context/GameContext'
 import type { Player } from '../types'
 
@@ -119,6 +119,10 @@ export function Sidebar() {
   const [diceType, setDiceType] = useState('d20')
   const [modifier, setModifier] = useState(0)
   const [rollResult, setRollResult] = useState<{ rolls: number[]; modifier: number } | null>(null)
+  const [isRolling, setIsRolling] = useState(false)
+  const rollTimeoutRef = useRef<ReturnType<typeof setTimeout>>()
+
+  useEffect(() => () => { if (rollTimeoutRef.current) clearTimeout(rollTimeoutRef.current) }, [])
 
   const effectiveDiceCount = diceType === 'd100' ? 1 : diceCount
   const diceCountMax = diceType === 'd100' ? 1 : 20
@@ -131,7 +135,13 @@ export function Sidebar() {
     for (let i = 0; i < count; i++) {
       rolls.push(Math.floor(Math.random() * sides) + 1)
     }
-    setRollResult({ rolls, modifier })
+    const result = { rolls, modifier }
+    setIsRolling(true)
+    if (rollTimeoutRef.current) clearTimeout(rollTimeoutRef.current)
+    rollTimeoutRef.current = setTimeout(() => {
+      setRollResult(result)
+      setIsRolling(false)
+    }, 600)
   }
 
   const formatDieValue = (value: number) => {
@@ -225,7 +235,9 @@ export function Sidebar() {
           </Space>
           <div className="result-area">
             <div className="result-label">Результат</div>
-            {rollResult !== null ? (
+            {isRolling ? (
+              <div className="result-value dice-roll-animation">🎲</div>
+            ) : rollResult !== null ? (
               <div className="result-value">{formatRollResult()}</div>
             ) : (
               <ThunderboltOutlined className="result-icon" />

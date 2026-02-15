@@ -79,6 +79,20 @@
   color: #bfbfbf;
 }
 
+.dice-roll-animation {
+  display: inline-block;
+  animation: diceRollSpin 600ms ease-in-out;
+}
+
+@keyframes diceRollSpin {
+  from {
+    transform: perspective(200px) rotateY(0deg);
+  }
+  to {
+    transform: perspective(200px) rotateY(360deg);
+  }
+}
+
 .players-list {
   list-style: none;
   padding: 0;
