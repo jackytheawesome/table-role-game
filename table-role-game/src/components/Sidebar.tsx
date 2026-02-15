@@ -145,8 +145,15 @@ export function Sidebar() {
   const formatRollResult = () => {
     if (!rollResult) return null
     const { rolls, modifier } = rollResult
-    const parts = rolls.map(formatDieValue)
     const total = rolls.reduce((a, b) => a + b, 0) + modifier
+    if (rolls.length === 1 && modifier === 0) {
+      return <>{formatDieValue(rolls[0])}</>
+    }
+    if (rolls.length === 1) {
+      const modifierStr = modifier > 0 ? ` + ${modifier}` : ` - ${Math.abs(modifier)}`
+      return <>{formatDieValue(rolls[0])}{modifierStr} = {total}</>
+    }
+    const parts = rolls.map(formatDieValue)
     const modifierStr = modifier > 0 ? ` + ${modifier}` : modifier < 0 ? ` - ${Math.abs(modifier)}` : ''
     return <>{parts.join(' + ')}{modifierStr} = {total}</>
   }
