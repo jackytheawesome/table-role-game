@@ -103,6 +103,7 @@ export function Sidebar() {
     removeSkillCheck,
     rollInitiativeForAll,
     clearInitiativeRolls,
+    hideAllMap,
     resetMap,
   } = useGame()
   const isGameMode = mode === 'game'
@@ -338,6 +339,21 @@ export function Sidebar() {
             >
               <Button block style={{ marginTop: 8 }}>
                 Сбросить карту
+              </Button>
+            </Popconfirm>
+          </div>
+        )}
+
+        {mapImage && isGameMode && (
+          <div className="sidebar-section" style={{ marginTop: 'auto', paddingTop: 16 }}>
+            <Popconfirm
+              title="Скрыть всю карту? Туман войны снова покроет все клетки."
+              onConfirm={hideAllMap}
+              okText="Да"
+              cancelText="Нет"
+            >
+              <Button block>
+                Скрыть всю карту
               </Button>
             </Popconfirm>
           </div>

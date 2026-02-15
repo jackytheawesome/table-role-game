@@ -35,6 +35,7 @@ interface GameContextType extends GameState {
   removeSkillCheck: (id: string) => void
   updateSkillCheckResult: (id: string, result: 'passed' | 'failed') => void
   revealCell: (col: number, row: number) => void
+  hideAllMap: () => void
   resetGame: () => void
   resetMap: () => void
 }
@@ -220,6 +221,10 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     }))
   }, [setStateWithPersist])
 
+  const hideAllMap = useCallback(() => {
+    setStateWithPersist((s) => ({ ...s, revealedCells: new Set() }))
+  }, [setStateWithPersist])
+
   const resetMap = useCallback(() => {
     setStateWithPersist((s) => ({
       ...s,
@@ -251,6 +256,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     rollInitiativeForAll,
     clearInitiativeRolls,
     revealCell,
+    hideAllMap,
     resetGame,
     resetMap,
   }

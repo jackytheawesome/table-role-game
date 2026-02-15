@@ -13,10 +13,15 @@
 .master-sidebar {
   background: #f8f8f8 !important;
   border-right: 1px solid #f0f0f0;
+  height: 100vh;
 }
 
 .sidebar-inner {
   padding: 16px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
 }
 
 .sidebar-section {
