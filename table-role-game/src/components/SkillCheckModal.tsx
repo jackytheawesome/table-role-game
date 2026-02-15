@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { InputNumber, Modal, Select, Space } from 'antd'
+import { Input, InputNumber, Modal, Select, Space } from 'antd'
 
 const SKILL_OPTIONS = [
   'Сила',
@@ -51,12 +51,14 @@ export function SkillCheckModal({
 }: SkillCheckModalProps) {
   const [skill, setSkill] = useState<string>('')
   const [difficulty, setDifficulty] = useState(1)
+  const [note, setNote] = useState<string>('')
 
   const handleSave = () => {
     if (skill) {
-      onSave({ skill, difficulty, description: undefined })
+      onSave({ skill, difficulty, description: note.trim() || undefined })
       setSkill('')
       setDifficulty(1)
+      setNote('')
     }
   }
 
@@ -64,6 +66,7 @@ export function SkillCheckModal({
     onCancel()
     setSkill('')
     setDifficulty(1)
+    setNote('')
   }
 
   return (
@@ -94,6 +97,16 @@ export function SkillCheckModal({
             max={30}
             value={difficulty}
             onChange={(v) => setDifficulty(v ?? 1)}
+            style={{ width: '100%', marginTop: 8 }}
+          />
+        </div>
+        <div>
+          <div className="add-check-label">Заметка для мастера</div>
+          <Input.TextArea
+            placeholder="Описание проверки, подсказки..."
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            rows={3}
             style={{ width: '100%', marginTop: 8 }}
           />
         </div>

@@ -45,7 +45,7 @@ export function MapCanvas({
   return (
     <div
       ref={ref}
-      className="map-canvas"
+      className={`map-canvas ${isGameMode ? 'map-canvas-game' : ''}`}
       onClick={handleClick}
       style={{
         backgroundImage: `url(${mapImage})`,

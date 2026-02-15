@@ -223,6 +223,11 @@
   min-height: 20px;
 }
 
+/* Режим игры: тонкие светлосерые линии сетки */
+.map-canvas-game .map-cell {
+  border: 1px solid #e0e0e0;
+}
+
 .map-cell:hover {
   background: rgba(24, 144, 255, 0.06);
 }
@@ -231,6 +236,8 @@
   position: absolute;
   inset: 0;
   background: rgba(0, 0, 0, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   pointer-events: none;
 }
 

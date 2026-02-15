@@ -139,7 +139,7 @@ export function Sidebar() {
     const { sum, total } = rollResult
     const isD20 = diceType === 'd20' && diceCount === 1
     if (isD20 && sum === 1) return <>💢 1</>
-    if (isD20 && sum === 20) return <>✨20</>
+    if (isD20 && sum === 20) return <>✨{sum}+{modifier}={total}</>
     return <>{sum}+{modifier}={total}</>
   }
 
