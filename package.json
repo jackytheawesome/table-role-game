@@ -1,0 +1,7 @@
+{
+  "name": "table-role-game",
+  "private": true,
+  "scripts": {
+    "build": "cd table-role-game && npm run build"
+  }
+}
