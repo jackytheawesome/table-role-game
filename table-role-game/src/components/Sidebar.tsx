@@ -120,7 +120,7 @@ export function Sidebar() {
   const [modifier, setModifier] = useState(0)
   const [rollResult, setRollResult] = useState<{ rolls: number[]; modifier: number } | null>(null)
   const [isRolling, setIsRolling] = useState(false)
-  const rollTimeoutRef = useRef<ReturnType<typeof setTimeout>>()
+  const rollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => () => { if (rollTimeoutRef.current) clearTimeout(rollTimeoutRef.current) }, [])
 
