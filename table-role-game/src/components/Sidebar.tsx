@@ -231,7 +231,7 @@ export function Sidebar() {
                   onRemove={() => removePlayer(p.id)}
                   onUpdate={(data) => updatePlayer(p.id, data)}
                   isGameMode={isGameMode}
-                  isCurrentTurn={hasInitiativeRolls && idx === 0}
+                  isCurrentTurn={isGameMode && hasInitiativeRolls && idx === 0}
                 />
               ))}
             </div>
