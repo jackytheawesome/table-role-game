@@ -1,24 +1,120 @@
-.app-cartoon {
+.master-app {
+  min-height: 100vh;
+}
+
+.setup-view {
+  min-height: 100vh;
+}
+
+.setup-view .ant-layout-sider {
+  background: #fffef8 !important;
+  border-right: 1px solid #e8e4dc;
+}
+
+.setup-view .ant-layout-content {
+  background: #f5f0e6;
+}
+
+.setup-main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.map-container {
   width: 100%;
-  max-width: 680px;
-  padding: 2rem;
+  max-width: 800px;
+  aspect-ratio: 4/3;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
+  border: 2px solid #e8e4dc;
 }
 
-.app-cartoon h1 {
-  color: #2c2c2c;
-  margin-bottom: 0.5rem;
+.map-container.game-mode {
+  max-width: 100%;
+  aspect-ratio: auto;
+  min-height: 500px;
 }
 
-.app-cartoon .subtitle {
-  color: #6b6b6b;
-  margin-bottom: 2rem;
+.map-view {
+  width: 100%;
+  height: 100%;
+  min-height: 400px;
+  position: relative;
+  cursor: pointer;
 }
 
-.demo-card {
-  margin-bottom: 1.5rem;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+.map-cell {
+  position: relative;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  min-height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
 }
 
-.demo-card .ant-card-head {
-  font-weight: 600;
+.map-cell:hover {
+  background: rgba(32, 178, 170, 0.1);
+}
+
+.fog-cell {
+  position: absolute;
+  inset: 0;
+  background: rgba(30, 30, 30, 0.85);
+  pointer-events: none;
+}
+
+.map-cell.revealed .fog-cell {
+  display: none;
+}
+
+.skill-marker {
+  position: absolute;
+  background: #20b2aa;
+  color: white;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: bold;
+  box-shadow: 0 2px 8px rgba(32, 178, 170, 0.4);
+  z-index: 2;
+}
+
+.skill-result {
+  position: absolute;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 8px;
+  z-index: 3;
+}
+
+.skill-result.passed {
+  background: rgba(82, 196, 26, 0.9);
+  color: white;
+}
+
+.skill-result.failed {
+  background: rgba(240, 147, 176, 0.9);
+  color: white;
+}
+
+.empty-state {
+  max-width: 400px;
+  text-align: center;
+  margin-top: 48px;
+}
+
+.map-uploader-card .ant-card-body {
+  padding: 16px;
+}
+
+.game-view .ant-layout-header {
+  line-height: 64px;
 }
