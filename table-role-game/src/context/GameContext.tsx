@@ -132,13 +132,14 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
 
   const addPlayer = useCallback(
     (data: { name: string; healthPoints?: number; initiative?: number }) => {
-      const hp = data.healthPoints ?? 0
+      const hp = Math.min(150, Math.max(0, data.healthPoints ?? 0))
+      const init = Math.min(20, Math.max(-20, data.initiative ?? 0))
       const player: Player = {
         id: crypto.randomUUID(),
-        name: data.name,
+        name: data.name.slice(0, 16),
         healthPoints: hp,
         maxHealthPoints: hp,
-        initiative: data.initiative,
+        initiative: init,
         color: `hsl(${Math.random() * 360}, 60%, 55%)`,
       }
       setStateWithPersist((s) => ({ ...s, players: [...s.players, player] }))

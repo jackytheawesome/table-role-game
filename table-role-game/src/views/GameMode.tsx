@@ -18,7 +18,12 @@ function SkillCheckOverlay({
   if (!skillCheck) return null
   return (
     <div className="skill-check-overlay">
-      <span>{skillCheck.skill} · КС {skillCheck.difficulty}</span>
+      <div className="skill-check-overlay-content">
+        <span>{skillCheck.skill} · КС {skillCheck.difficulty}</span>
+        {skillCheck.description && (
+          <div className="skill-check-overlay-note">{skillCheck.description}</div>
+        )}
+      </div>
       <button type="button" className="skill-check-overlay-close" onClick={onClose} aria-label="Закрыть">
         <CloseOutlined />
       </button>

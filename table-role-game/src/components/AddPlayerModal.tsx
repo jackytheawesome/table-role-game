@@ -62,6 +62,7 @@ export function AddPlayerModal({ open, onClose }: AddPlayerModalProps) {
             <div className="add-player-label">Очки здоровья</div>
             <InputNumber
               min={0}
+              max={150}
               value={healthPoints}
               onChange={(v) => setHealthPoints(v ?? 0)}
               style={{ width: 120 }}
@@ -70,6 +71,8 @@ export function AddPlayerModal({ open, onClose }: AddPlayerModalProps) {
           <div>
             <div className="add-player-label">Инициатива</div>
             <InputNumber
+              min={-20}
+              max={20}
               value={initiative}
               onChange={(v) => setInitiative(v ?? 0)}
               style={{ width: 120 }}

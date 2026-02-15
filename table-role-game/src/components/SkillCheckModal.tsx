@@ -94,7 +94,7 @@ export function SkillCheckModal({
           <div className="add-check-label">Класс сложности</div>
           <InputNumber
             min={1}
-            max={30}
+            max={20}
             value={difficulty}
             onChange={(v) => setDifficulty(v ?? 1)}
             style={{ width: '100%', marginTop: 8 }}

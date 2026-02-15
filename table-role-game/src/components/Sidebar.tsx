@@ -27,19 +27,21 @@ function PlayerCard({
   onRemove,
   onUpdate,
   isGameMode,
+  isCurrentTurn,
 }: {
   player: Player
   onRemove: () => void
   onUpdate: (data: Partial<Pick<Player, 'healthPoints' | 'initiativeRoll'>>) => void
   isGameMode?: boolean
+  isCurrentTurn?: boolean
 }) {
   const hp = player.healthPoints ?? 0
-  const maxHp = player.maxHealthPoints ?? hp
+  const maxHp = Math.min(150, player.maxHealthPoints ?? hp)
   const init = player.initiative ?? 0
   const initRoll = player.initiativeRoll
 
   return (
-    <div className="player-card">
+    <div className={`player-card ${isCurrentTurn ? 'player-card-current-turn' : ''}`}>
       <div className="player-card-header">
         <span className="player-name">{player.name}</span>
         <Popconfirm
@@ -75,15 +77,9 @@ function PlayerCard({
           Ин.{init >= 0 ? '+' : ''}{init}
         </span>
         {isGameMode && initRoll != null && (
-          <InputNumber
-            size="small"
-            value={initRoll}
-            onChange={(v) => onUpdate({ initiativeRoll: v ?? undefined })}
-            controls={false}
-            className="init-roll-input"
-            min={1}
-            max={20}
-          />
+          <span className="init-roll-display">
+            {(initRoll ?? 0) + init}
+          </span>
         )}
       </div>
     </div>
@@ -197,6 +193,8 @@ export function Sidebar() {
               <InputNumber
                 value={modifier}
                 onChange={(v) => setModifier(v ?? 0)}
+                min={-20}
+                max={20}
                 style={{ width: 64 }}
               />
             </div>
@@ -226,13 +224,14 @@ export function Sidebar() {
             <Typography.Text type="secondary">—</Typography.Text>
           ) : (
             <div className="players-cards">
-              {sortedPlayers.map((p) => (
+              {sortedPlayers.map((p, idx) => (
                 <PlayerCard
                   key={p.id}
                   player={p}
                   onRemove={() => removePlayer(p.id)}
                   onUpdate={(data) => updatePlayer(p.id, data)}
                   isGameMode={isGameMode}
+                  isCurrentTurn={hasInitiativeRolls && idx === 0}
                 />
               ))}
             </div>
@@ -262,7 +261,12 @@ export function Sidebar() {
               <ul className="checks-list">
                 {skillChecks.map((sc, i) => (
                   <li key={sc.id} className="check-item">
-                    <span>{i + 1}. {sc.skill} + КС {sc.difficulty}</span>
+                    <div className="check-item-content">
+                      <span>{i + 1}. {sc.skill} + КС {sc.difficulty}</span>
+                      {sc.description && (
+                        <div className="check-item-note">{sc.description}</div>
+                      )}
+                    </div>
                     <Popconfirm
                       title="Удалить проверку?"
                       onConfirm={() => removeSkillCheck(sc.id)}
