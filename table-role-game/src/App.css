@@ -391,6 +391,11 @@
   font-size: 14px;
 }
 
+.init-display {
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.88);
+}
+
 .init-field {
   display: inline-flex;
   align-items: center;

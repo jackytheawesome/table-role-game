@@ -6,14 +6,12 @@ import {
   Typography,
   Space,
   Popconfirm,
-  Tooltip,
 } from 'antd'
 import {
   ThunderboltOutlined,
   PlayCircleOutlined,
   DeleteOutlined,
   HeartFilled,
-  QuestionCircleOutlined,
 } from '@ant-design/icons'
 import { useState } from 'react'
 import { useGame } from '../context/GameContext'
@@ -32,10 +30,11 @@ function PlayerCard({
 }: {
   player: Player
   onRemove: () => void
-  onUpdate: (data: Partial<Pick<Player, 'healthPoints' | 'initiative' | 'initiativeRoll'>>) => void
+  onUpdate: (data: Partial<Pick<Player, 'healthPoints' | 'initiativeRoll'>>) => void
   isGameMode?: boolean
 }) {
   const hp = player.healthPoints ?? 0
+  const maxHp = player.maxHealthPoints ?? hp
   const init = player.initiative ?? 0
   const initRoll = player.initiativeRoll
 
@@ -60,23 +59,21 @@ function PlayerCard({
           <InputNumber
             size="small"
             min={0}
+            max={maxHp}
             value={hp}
-            onChange={(v) => onUpdate({ healthPoints: v ?? 0 })}
+            onChange={(v) => {
+              const val = v ?? 0
+              onUpdate({ healthPoints: Math.min(Math.max(0, val), maxHp) })
+            }}
+            parser={(v) => Math.min(Math.max(0, Number(v) || 0), maxHp)}
             controls={false}
             bordered={false}
             className="hp-input"
           />
         </span>
-        <div className="init-field">
-          <span className="init-prefix">Ин. {init >= 0 ? '+' : ''}</span>
-          <InputNumber
-            size="small"
-            value={init}
-            onChange={(v) => onUpdate({ initiative: v ?? 0 })}
-            controls={false}
-            className="init-input"
-          />
-        </div>
+        <span className="init-display">
+          Ин.{init >= 0 ? '+' : ''}{init}
+        </span>
         {isGameMode && initRoll != null && (
           <InputNumber
             size="small"
@@ -88,15 +85,6 @@ function PlayerCard({
             max={20}
           />
         )}
-        <Tooltip title={`Игрок: ${player.name} | HP: ${hp} | Инициатива: ${init >= 0 ? '+' : ''}${init}`}>
-          <Button
-            type="text"
-            size="small"
-            icon={<QuestionCircleOutlined />}
-            className="player-info-btn"
-            aria-label="Информация об игроке"
-          />
-        </Tooltip>
       </div>
     </div>
   )
@@ -119,6 +107,7 @@ export function Sidebar() {
     removeSkillCheck,
     rollInitiativeForAll,
     clearInitiativeRolls,
+    resetMap,
   } = useGame()
   const isGameMode = mode === 'game'
   const hasInitiativeRolls = players.some((p) => p.initiativeRoll != null)
@@ -130,9 +119,9 @@ export function Sidebar() {
       )
     : players
   const [dicePlayer, setDicePlayer] = useState<string | null>(null)
-  const [diceCount, setDiceCount] = useState(3)
-  const [diceType, setDiceType] = useState('d100')
-  const [modifier, setModifier] = useState(2)
+  const [diceCount, setDiceCount] = useState(1)
+  const [diceType, setDiceType] = useState('d20')
+  const [modifier, setModifier] = useState(0)
   const [rollResult, setRollResult] = useState<{ sum: number; total: number } | null>(null)
 
   const rollDice = () => {
@@ -143,6 +132,15 @@ export function Sidebar() {
       sum += Math.floor(Math.random() * sides) + 1
     }
     setRollResult({ sum, total: sum + modifier })
+  }
+
+  const formatRollResult = () => {
+    if (!rollResult) return null
+    const { sum, total } = rollResult
+    const isD20 = diceType === 'd20' && diceCount === 1
+    if (isD20 && sum === 1) return <>💢 1</>
+    if (isD20 && sum === 20) return <>✨20</>
+    return <>{sum}+{modifier}={total}</>
   }
 
   return (
@@ -206,9 +204,7 @@ export function Sidebar() {
           <div className="result-area">
             <div className="result-label">Результат</div>
             {rollResult !== null ? (
-              <div className="result-value">
-                {rollResult.sum}+{modifier}={rollResult.total}
-              </div>
+              <div className="result-value">{formatRollResult()}</div>
             ) : (
               <ThunderboltOutlined className="result-icon" />
             )}
@@ -294,6 +290,16 @@ export function Sidebar() {
             >
               Начать игру
             </Button>
+            <Popconfirm
+              title="Сбросить карту и все проверки?"
+              onConfirm={resetMap}
+              okText="Да"
+              cancelText="Нет"
+            >
+              <Button block style={{ marginTop: 8 }}>
+                Сбросить карту
+              </Button>
+            </Popconfirm>
           </div>
         )}
       </div>

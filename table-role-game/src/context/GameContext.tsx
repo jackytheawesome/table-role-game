@@ -36,6 +36,41 @@ interface GameContextType extends GameState {
   updateSkillCheckResult: (id: string, result: 'passed' | 'failed') => void
   revealCell: (col: number, row: number) => void
   resetGame: () => void
+  resetMap: () => void
+}
+
+const STORAGE_KEY = 'table-role-game-state'
+
+function loadPersistedState(): Partial<GameState> | null {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY)
+    if (!raw) return null
+    const data = JSON.parse(raw)
+    return {
+      mapImage: data.mapImage ?? null,
+      mapSize: data.mapSize ?? { cols: 10, rows: 8 },
+      players: data.players ?? [],
+      skillChecks: data.skillChecks ?? [],
+      revealedCells: new Set(data.revealedCells ?? []),
+    }
+  } catch {
+    return null
+  }
+}
+
+function saveState(state: GameState) {
+  try {
+    const toSave = {
+      mapImage: state.mapImage,
+      mapSize: state.mapSize,
+      players: state.players,
+      skillChecks: state.skillChecks,
+      revealedCells: Array.from(state.revealedCells),
+    }
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave))
+  } catch {
+    // ignore
+  }
 }
 
 const defaultState: GameState = {
@@ -53,11 +88,26 @@ const defaultState: GameState = {
 const GameContext = createContext<GameContextType | null>(null)
 
 export function GameProvider({ children }: { children: React.ReactNode }) {
-  const [state, setState] = useState<GameState>(defaultState)
+  const [state, setState] = useState<GameState>(() => {
+    const persisted = loadPersistedState()
+    if (!persisted) return defaultState
+    return {
+      ...defaultState,
+      ...persisted,
+    }
+  })
+
+  const setStateWithPersist = useCallback((updater: (s: GameState) => GameState) => {
+    setState((s) => {
+      const next = updater(s)
+      saveState(next)
+      return next
+    })
+  }, [])
 
   const setMode = useCallback((mode: AppMode) => {
-    setState((s) => ({ ...s, mode }))
-  }, [])
+    setStateWithPersist((s) => ({ ...s, mode }))
+  }, [setStateWithPersist])
 
   const setUploadModalOpen = useCallback((open: boolean) => {
     setState((s) => ({ ...s, uploadModalOpen: open }))
@@ -72,101 +122,114 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   const setMap = useCallback((image: string, cols: number, rows: number) => {
-    setState((s) => ({
+    setStateWithPersist((s) => ({
       ...s,
       mapImage: image,
       mapSize: { cols, rows },
       revealedCells: new Set(),
     }))
-  }, [])
+  }, [setStateWithPersist])
 
   const addPlayer = useCallback(
     (data: { name: string; healthPoints?: number; initiative?: number }) => {
+      const hp = data.healthPoints ?? 0
       const player: Player = {
         id: crypto.randomUUID(),
         name: data.name,
-        healthPoints: data.healthPoints,
+        healthPoints: hp,
+        maxHealthPoints: hp,
         initiative: data.initiative,
         color: `hsl(${Math.random() * 360}, 60%, 55%)`,
       }
-      setState((s) => ({ ...s, players: [...s.players, player] }))
+      setStateWithPersist((s) => ({ ...s, players: [...s.players, player] }))
     },
-    []
+    [setStateWithPersist]
   )
 
   const removePlayer = useCallback((id: string) => {
-    setState((s) => ({ ...s, players: s.players.filter((p) => p.id !== id) }))
-  }, [])
+    setStateWithPersist((s) => ({ ...s, players: s.players.filter((p) => p.id !== id) }))
+  }, [setStateWithPersist])
 
   const updatePlayer = useCallback(
     (
       id: string,
       data: Partial<Pick<Player, 'healthPoints' | 'initiative' | 'initiativeRoll'>>
     ) => {
-      setState((s) => ({
+      setStateWithPersist((s) => ({
         ...s,
         players: s.players.map((p) =>
           p.id === id ? { ...p, ...data } : p
         ),
       }))
     },
-    []
+    [setStateWithPersist]
   )
 
   const rollInitiativeForAll = useCallback(() => {
-    setState((s) => ({
+    setStateWithPersist((s) => ({
       ...s,
       players: s.players.map((p) => {
         const roll = Math.floor(Math.random() * 20) + 1
         return { ...p, initiativeRoll: roll }
       }),
     }))
-  }, [])
+  }, [setStateWithPersist])
 
   const clearInitiativeRolls = useCallback(() => {
-    setState((s) => ({
+    setStateWithPersist((s) => ({
       ...s,
       players: s.players.map((p) => ({ ...p, initiativeRoll: undefined })),
     }))
-  }, [])
+  }, [setStateWithPersist])
 
   const addSkillCheck = useCallback((point: Omit<SkillCheckPoint, 'id'>) => {
     const skillCheck: SkillCheckPoint = {
       ...point,
       id: crypto.randomUUID(),
     }
-    setState((s) => ({ ...s, skillChecks: [...s.skillChecks, skillCheck] }))
-  }, [])
+    setStateWithPersist((s) => ({ ...s, skillChecks: [...s.skillChecks, skillCheck] }))
+  }, [setStateWithPersist])
 
   const removeSkillCheck = useCallback((id: string) => {
-    setState((s) => ({
+    setStateWithPersist((s) => ({
       ...s,
       skillChecks: s.skillChecks.filter((sc) => sc.id !== id),
     }))
-  }, [])
+  }, [setStateWithPersist])
 
   const updateSkillCheckResult = useCallback(
     (id: string, result: 'passed' | 'failed') => {
-      setState((s) => ({
+      setStateWithPersist((s) => ({
         ...s,
         skillChecks: s.skillChecks.map((sc) =>
           sc.id === id ? { ...sc, result } : sc
         ),
       }))
     },
-    []
+    [setStateWithPersist]
   )
 
   const revealCell = useCallback((col: number, row: number) => {
     const key = `${col}-${row}`
-    setState((s) => ({
+    setStateWithPersist((s) => ({
       ...s,
       revealedCells: new Set([...s.revealedCells, key]),
     }))
-  }, [])
+  }, [setStateWithPersist])
+
+  const resetMap = useCallback(() => {
+    setStateWithPersist((s) => ({
+      ...s,
+      mapImage: null,
+      mapSize: { cols: 10, rows: 8 },
+      skillChecks: [],
+      revealedCells: new Set(),
+    }))
+  }, [setStateWithPersist])
 
   const resetGame = useCallback(() => {
     setState(defaultState)
+    localStorage.removeItem(STORAGE_KEY)
   }, [])
 
   const value: GameContextType = {
@@ -186,6 +249,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     clearInitiativeRolls,
     revealCell,
     resetGame,
+    resetMap,
   }
 
   return <GameContext.Provider value={value}>{children}</GameContext.Provider>

@@ -2,6 +2,7 @@ export interface Player {
   id: string
   name: string
   healthPoints?: number
+  maxHealthPoints?: number
   initiative?: number
   initiativeRoll?: number
   color?: string

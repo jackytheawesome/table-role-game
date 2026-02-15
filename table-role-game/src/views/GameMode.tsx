@@ -3,7 +3,6 @@ import { Button } from 'antd'
 import { ArrowLeftOutlined, CloseOutlined } from '@ant-design/icons'
 import { useGame } from '../context/GameContext'
 import { MapCanvas } from '../components/MapCanvas'
-import { SkillCheckResultModal } from '../components/SkillCheckResultModal'
 import type { SkillCheckPoint } from '../types'
 
 /**
@@ -37,7 +36,6 @@ export function GameMode() {
     skillChecks,
     revealedCells,
     revealCell,
-    updateSkillCheckResult,
     setMode,
   } = useGame()
 
@@ -91,16 +89,6 @@ export function GameMode() {
           onClose={() => setPendingSkillCheck(null)}
         />
       </div>
-
-      <SkillCheckResultModal
-        open={!!pendingSkillCheck}
-        skillCheck={skillCheck}
-        onResult={(r) => {
-          if (pendingSkillCheck) updateSkillCheckResult(pendingSkillCheck, r)
-          setPendingSkillCheck(null)
-        }}
-        onCancel={() => setPendingSkillCheck(null)}
-      />
     </>
   )
 }
